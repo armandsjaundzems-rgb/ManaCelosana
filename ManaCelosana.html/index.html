@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mana Ceļošana | Adventures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2d3436;
+            --accent: #e17055;
+            --sand: #f5f0eb;
+            --forest: #00b894;
+            --ocean: #0984e3;
+            --sunset: #fdcb6e;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--sand);
+            color: var(--primary);
+            line-height: 1.7;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(245, 240, 235, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f0eb 0%, #e8e0d8 100%);
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            padding: 0 2rem;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: white;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #636e72;
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            font-weight: 300;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 20px rgba(225, 112, 85, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(225, 112, 85, 0.5);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Floating Elements */
+        .floating-card {
+            position: absolute;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(1) {
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-card:nth-child(2) {
+            top: 20%;
+            right: 12%;
+            animation-delay: 2s;
+        }
+
+        .floating-card:nth-child(3) {
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        .floating-card:nth-child(4) {
+            bottom: 15%;
+            right: 10%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .floating-card span {
+            font-size: 2rem;
+        }
+
+        /* About Section */
+        .about {
+            padding: 8rem 5%;
+            background: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: #636e72;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .about-card {
+            padding: 2.5rem;
+            background: var(--sand);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .about-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .about-card-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-card p {
+            color: #636e72;
+            font-size: 0.95rem;
+        }
+
+        /* Destinations Section */
+        .destinations {
+            padding: 8rem 5%;
+            background: var(--sand);
+        }
+
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .destination-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            aspect-ratio: 4/5;
+            cursor: pointer;
+        }
+
+        .destination-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+            z-index: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .destination-card:hover::before {
+            opacity: 0.8;
+        }
+
+        .destination-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s ease;
+        }
+
+        .destination-card:hover .destination-bg {
+            transform: scale(1.1);
+        }
+
+        .destination-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            z-index: 2;
+            color: white;
+        }
+
+        .destination-tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: var(--accent);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .destination-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .destination-content p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 6rem 5%;
+            background: var(--primary);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        /* Timeline Section */
+        .timeline {
+            padding: 8rem 5%;
+            background: white;
+        }
+
+        .timeline-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            text-align: right;
+            padding-right: 3rem;
+            padding-left: 0;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            text-align: left;
+            padding-left: 3rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 4px var(--accent);
+        }
+
+        .timeline-content {
+            width: 50%;
+        }
+
+        .timeline-date {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-content p {
+            color: #636e72;
+        }
+
+        /* Gallery Section */
+        .gallery {
+            padding: 8rem 5%;
+            background: var(--sand);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 250px);
+            gap: 1rem;
+        }
+
+        .gallery-item {
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(45deg, var(--accent), var(--forest));
+        }
+
+        .gallery-item:nth-child(1) {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .gallery-item:nth-child(4) {
+            grid-column: span 2;
+        }
+
+        .gallery-item span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            opacity: 0.3;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 8rem 5%;
+            background: var(--primary);
+            color: white;
+        }
+
+        .contact-content {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact p {
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .social-links a {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem 5%;
+            background: #1e2526;
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background: white;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                transition: right 0.3s ease;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .floating-card {
+                display: none;
+            }
+
+            .timeline-container::before {
+                left: 20px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(odd) {
+                flex-direction: column;
+            }
+
+            .timeline-item:nth-child(odd) .timeline-content,
+            .timeline-item:nth-child(even) .timeline-content {
+                text-align: left;
+                padding-left: 3rem;
+                padding-right: 0;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: auto;
+            }
+
+            .gallery-item:nth-child(1) {
+                grid-column: span 2;
+                grid-row: span 1;
+            }
+
+            .gallery-item:nth-child(4) {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">Mana Ceļošana</a>
+        <ul class="nav-links">
+            <li><a href="#par">Par mani</a></li>
+            <li><a href="#celojumi">Ceļojumi</a></li>
+            <li><a href="#pieredze">Pieredze</a></li>
+            <li><a href="#kontakti">Kontakti</a></li>
+        </ul>
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="floating-card">
+            <span>✈️</span>
+        </div>
+        <div class="floating-card">
+            <span>🗺️</span>
+        </div>
+        <div class="floating-card">
+            <span>🏔️</span>
+        </div>
+        <div class="floating-card">
+            <span>🌊</span>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-badge">Ceļotāja stāsts</div>
+            <h1>Atklāj <span>pasaule</span> kopā</h1>
+            <p>Katrs ceļojums ir jauna adrese, jauna pieredze un jauna sevis versija. Pievienojies man ceļā caur nezināmo!</p>
+            <div class="hero-buttons">
+                <a href="#celojumi" class="btn btn-primary">Sākt eksplorēt</a>
+                <a href="#par" class="btn btn-secondary">Uzzināt vairāk</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="par">
+        <div class="container">
+            <div class="section-header">
+                <h2>Kas es esmu?</h2>
+                <p>Ceļotāja ar degsmi pēc jaunām pieredzēm un neaizmirstamiem mirkļiem</p>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-card-icon">🌍</div>
+                    <h3>Pasaule</h3>
+                    <p>Ticu, ka ceļošana ir labākā izglītība. Katra valsts, katra kultūra un katrs cilvēks māca kaut ko jaunu.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon">📸</div>
+                    <h3>Atmiņas</h3>
+                    <p>Katrs kadrs stāsta stāstu. No kalnu virsotnēm līdz okeāna krastiem — fiksēju mirkļus, kas paliek mūžībā.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon">💫</div>
+                    <h3>Izaugsme</h3>
+                    <p>Ceļojumi maina mūs. Tie atver acis, paplašina sirds un dod drosmi doties tālāk nekā jebkad agrāk.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Destinations Section -->
+    <section class="destinations" id="celojumi">
+        <div class="container">
+            <div class="section-header">
+                <h2>Mani ceļojumi</h2>
+                <p>Dažas no vietām, kas ir atstājušas pēdas manā sirdī</p>
+            </div>
+
+            <div class="destinations-grid">
+                <div class="destination-card">
+                    <div class="destination-bg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div class="destination-content">
+                        <span class="destination-tag">Eiropa</span>
+                        <h3>Itālija</h3>
+                        <p>Pasta pa Toskānas vīnogām un Romas ielām</p>
+                    </div>
+                </div>
+                <div class="destination-card">
+                    <div class="destination-bg" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                    <div class="destination-content">
+                        <span class="destination-tag">Āzija</span>
+                        <h3>Japāna</h3>
+                        <p>Tradīciju un modernitātes sajaukums</p>
+                    </div>
+                </div>
+                <div class="destination-card">
+                    <div class="destination-bg" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                    <div class="destination-content">
+                        <span class="destination-tag">Okeānija</span>
+                        <h3>Fidži</h3>
+                        <p>Paradīzes pludmales un kristāldzidrs ūdens</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>15+</h3>
+                    <p>Valstis apmeklētas</p>
+                </div>
+                <div class="stat-item">
+                    <h3>50+</h3>
+                    <p>Ceļojumi veikti</p>
+                </div>
+                <div class="stat-item">
+                    <h3>1000+</h3>
+                    <p>Attēli uzņemti</p>
+                </div>
+                <div class="stat-item">
+                    <h3>∞</h3>
+                    <p>Atmiņas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="timeline" id="pieredze">
+        <div class="container">
+            <div class="section-header">
+                <h2>Mani piedzīvojumi</h2>
+                <p>Nozīmīgākie mirkļi manā ceļošanas laikā</p>
+            </div>
+
+            <div class="timeline-container">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2024</div>
+                        <h3>Japānas kļūšana</h3>
+                        <p>Pirmā reize, kad šķērsoju okeānu. Tokija, Kiotо, Osakas — katra pilsēta ar savu dvēseli.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2023</div>
+                        <h3>Alpu pāreja</h3>
+                        <p>Divu nedēļu pārgājiens caur Šveices Alpiem. Sniega virsotnes un zaļās ielejas.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2022</div>
+                        <h3>Islandes piedzīvojums</h3>
+                        <p>Ledāji, geizeri un ziemeļblāzma. Islande — zeme, kur daba valda absolūti.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2021</div>
+                        <h3>Ceļa sākums</h3>
+                        <p>Pirmais solo ceļojums uz Barselonu. No šī brīža viss mainījās.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery">
+        <div class="container">
+            <div class="section-header">
+                <h2>Attēlu galerija</h2>
+                <p>Mirklis, kas apstājas uz mūžību</p>
+            </div>
+
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <span>🖼️</span>
+                </div>
+                <div class="gallery-item">
+                    <span>🏖️</span>
+                </div>
+                <div class="gallery-item">
+                    <span>🏛️</span>
+                </div>
+                <div class="gallery-item">
+                    <span>🌅</span>
+                </div>
+                <div class="gallery-item">
+                    <span>⛰️</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="kontakti">
+        <div class="container">
+            <div class="contact-content">
+                <h2>Sazinies ar mani</h2>
+                <p>Vēlies uzzināt vairāk par maniem ceļojumiem vai padalīties ar savējiem? Ziņo man!</p>
+                <a href="mailto:ceplotajs@epasts.lv" class="btn btn-primary">Rakstīt ziņu</a>
+
+                <div class="social-links">
+                    <a href="#">📷</a>
+                    <a href="#">🐦</a>
+                    <a href="#">📘</a>
+                    <a href="#">🎵</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 Mana Ceļošana. Visas tiesības rezervētas.</p>
+    </footer>
+
+    <script>
+        // Navigation scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
